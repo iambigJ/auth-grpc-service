@@ -1,0 +1,56 @@
+// auth.proto
+
+syntax = "proto3";
+
+package auth;
+
+message LoginRequest {
+  string strategy = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message UserProfile {
+  string firstName = 1;
+  string lastName = 2;
+  string email = 3;
+  string defaultAiModel = 4;
+}
+
+message SignupRequest {
+  string strategy = 1;
+  string username = 2;
+  string password = 3;
+  string referralCode = 4;
+  UserProfile profile = 5;
+  string token = 6;
+}
+
+message AuthResponse {
+  string token = 1;
+}
+
+message SendVerificationRequest {
+  string strategy = 1;
+  string verifier = 2;
+}
+
+message SendVerificationResponse {
+  string verificationToken = 1;
+}
+
+message VerifyValidationCodeRequest {
+  string verificationToken = 1;
+  string code = 2;
+}
+
+message VerifyValidationResponse {
+  string message = 1;
+}
+
+service AuthService {
+  rpc Login(LoginRequest) returns (AuthResponse);
+  rpc Signup(SignupRequest) returns (AuthResponse);
+  rpc SendVerification(SendVerificationRequest) returns (SendVerificationResponse);
+  rpc VerifyValidationCode(VerifyValidationCodeRequest) returns (VerifyValidationResponse);
+}
