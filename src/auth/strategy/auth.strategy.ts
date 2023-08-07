@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { SmsService } from '../../common/sms.service';
 
 export interface AuthStrategy {
   verify();
   login();
   signup();
-  sendVerification(verifier: string);
+  sendVerification(verifier: string, message: string);
   verifyVerification();
 }
 
@@ -32,6 +33,7 @@ export class AuthEmailStrategy implements AuthStrategy {
 }
 @Injectable()
 export class AuthMobileStrategy implements AuthStrategy {
+  constructor(private readonly smsService: SmsService) {}
   login() {
     return 'mlogin';
   }
@@ -43,8 +45,8 @@ export class AuthMobileStrategy implements AuthStrategy {
   verify() {
     return 'mverify';
   }
-  sendVerification(verifier) {
-    return verifier + 'msendVerification';
+  async sendVerification(verifier: string, message: string): Promise<any> {
+    return await this.smsService.send(verifier, message);
   }
 
   verifyVerification() {
@@ -70,8 +72,8 @@ export class AuthContext {
     return this.strategy.verify();
   }
 
-  sendVerification(verifier: string) {
-    return this.strategy.sendVerification(verifier);
+  async sendVerification(verifier: string, message: string) {
+    return await this.strategy.sendVerification(verifier, message);
   }
 
   verifyVerification() {

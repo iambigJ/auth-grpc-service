@@ -1,27 +1,32 @@
-import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
+import { Controller, UseFilters } from '@nestjs/common';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import {
-  SendVerificationRequest,
   SendVerificationResponse,
   VerifyValidationCodeRequest,
   VerifyValidationCodeResponse,
 } from './auth.interface';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './auth.validator';
+import { SendVerificationDto } from './dto/auth.dto';
+import { GrpcExceptionFilter } from '../rpc.filter';
+import { AuthValidator } from './auth.validator';
+import { RPC_BAD_REQUEST } from "../common/messages";
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @GrpcMethod('AuthService', 'SendVerification')
+  @UseFilters(GrpcExceptionFilter)
   async sendVerification(
-    sendVerificationRequest: CreateUserDto,
+    sendVerificationRequest: SendVerificationDto,
   ): Promise<Observable<SendVerificationResponse>> {
-    try {
-      return await this.authService.sendVerification(sendVerificationRequest);
-    } catch (e) {
-      throw 'not ok';
+    if (!AuthValidator.isSendVerificationValidate(sendVerificationRequest)) {
+      throw new RpcException({
+        code: 3,
+        message: RPC_BAD_REQUEST,
+      });
     }
+    return await this.authService.sendVerification(sendVerificationRequest);
   }
   @GrpcMethod('AuthService', 'VerifyValidationCode')
   async verifyValidationCode(

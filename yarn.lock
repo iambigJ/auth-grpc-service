@@ -3436,6 +3436,11 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
+kavenegar@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/kavenegar/-/kavenegar-1.1.4.tgz#7697599f6d31b5faaa3dccb3108d711b1fac9667"
+  integrity sha512-t7oqXS1zZjlFkeofF2J0qSKQeYAmCYogfqROCl/ZQZ3hvCnq9fBBiZIThGnozQ5mMEAJPI5TwWh9RyQ3bOqH3Q==
+
 kleur@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"

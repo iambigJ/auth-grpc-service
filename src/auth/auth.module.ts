@@ -6,9 +6,18 @@ import {
   AuthEmailStrategy,
   AuthMobileStrategy,
 } from './strategy/auth.strategy';
+import { SmsService } from '../common/sms.service';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, AuthContext, AuthEmailStrategy, AuthMobileStrategy],
+  providers: [
+    AuthService,
+    AuthContext,
+    AuthEmailStrategy,
+    AuthMobileStrategy,
+    SmsService,
+    ConfigService,
+  ],
 })
 export class AuthModule {}

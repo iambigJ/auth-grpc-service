@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import * as process from 'process';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from './validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(

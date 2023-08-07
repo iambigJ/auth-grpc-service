@@ -27,10 +27,13 @@ export class AuthService {
     } else {
       this.authContext.setStrategy(this.authMobileStrategy);
     }
+    const message = 'it`s ok';
+    await this.authContext.sendVerification(
+      sendVerificationRequest.verifier,
+      message,
+    );
     return of({
-      verificationToken: this.authContext.sendVerification(
-        sendVerificationRequest.verifier,
-      ),
+      verificationToken: 'ok',
     });
   }
 
