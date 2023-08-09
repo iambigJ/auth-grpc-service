@@ -1,5 +1,4 @@
 import { SendVerificationRequest } from './auth.interface';
-import { IsEmail, IsNotEmpty, IsString, ValidateIf } from 'class-validator';
 export class Validator {
   static isEmail(email: string): boolean {
     return new RegExp('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').test(email);

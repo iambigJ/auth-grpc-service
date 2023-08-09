@@ -36,7 +36,7 @@ message SendVerificationRequest {
 }
 
 message SendVerificationResponse {
-  string verificationToken = 1;
+  string message = 1;
 }
 
 message VerifyValidationCodeRequest {

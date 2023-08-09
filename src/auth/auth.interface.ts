@@ -30,7 +30,7 @@ export interface SendVerificationRequest {
 }
 
 export interface SendVerificationResponse {
-  verificationToken: string;
+  message: string;
 }
 
 export interface VerifyValidationCodeRequest {

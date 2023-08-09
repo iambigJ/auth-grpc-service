@@ -48,7 +48,7 @@ export class AuthService {
       message,
     );
     return of({
-      verificationToken: message,
+      message,
     });
   }
 
