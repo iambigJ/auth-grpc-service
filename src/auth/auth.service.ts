@@ -6,14 +6,12 @@ import {
   VerifyValidationCodeResponse,
 } from './auth.interface';
 import { Observable, of } from 'rxjs';
-import {
-  AuthContext,
-  AuthEmailStrategy,
-  AuthMobileStrategy,
-} from './strategy/auth.strategy';
+import { AuthContext } from './strategy/auth.strategy';
 import { REDIS_CLIENT, RedisClient } from '../common/redis/redis.types';
 import { ConfigService } from '@nestjs/config';
 import { UtilsService } from '../common/providers/utils/utils.service';
+import { AuthMobileStrategy } from './strategy/auth.mobile.strategy';
+import { AuthEmailStrategy } from './strategy/auth.email.strategy';
 
 @Injectable()
 export class AuthService {
