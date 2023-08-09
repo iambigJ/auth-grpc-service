@@ -6,8 +6,9 @@ import {
   AuthEmailStrategy,
   AuthMobileStrategy,
 } from './strategy/auth.strategy';
-import { SmsService } from '../common/sms.service';
+import { SmsService } from '../common/providers/sms.service';
 import { ConfigService } from '@nestjs/config';
+import { redisClientFactory } from '../common/redis/redis.factory';
 
 @Module({
   controllers: [AuthController],
@@ -17,6 +18,7 @@ import { ConfigService } from '@nestjs/config';
     AuthEmailStrategy,
     AuthMobileStrategy,
     SmsService,
+    redisClientFactory,
     ConfigService,
   ],
 })

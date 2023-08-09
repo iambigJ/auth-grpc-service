@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   SendVerificationRequest,
   SendVerificationResponse,
@@ -11,14 +11,22 @@ import {
   AuthEmailStrategy,
   AuthMobileStrategy,
 } from './strategy/auth.strategy';
+import { REDIS_CLIENT, RedisClient } from '../common/redis/redis.types';
+import { ConfigService } from '@nestjs/config';
+import { UtilsService } from '../common/providers/utils/utils.service';
 
 @Injectable()
 export class AuthService {
+  private readonly redisExpire: number;
   constructor(
     private readonly authContext: AuthContext,
     private readonly authMobileStrategy: AuthMobileStrategy,
     private readonly authEmailStrategy: AuthEmailStrategy,
-  ) {}
+    private readonly configService: ConfigService,
+    @Inject(REDIS_CLIENT) private readonly redisClient: RedisClient,
+  ) {
+    this.redisExpire = this.configService.get<number>('REDIS_EXPIRE');
+  }
   async sendVerification(
     sendVerificationRequest: SendVerificationRequest,
   ): Promise<Observable<SendVerificationResponse>> {
@@ -27,13 +35,22 @@ export class AuthService {
     } else {
       this.authContext.setStrategy(this.authMobileStrategy);
     }
-    const message = 'it`s ok';
+    const { code, message } = UtilsService.generateSmsValidationCode();
+    await this.redisClient.set(
+      sendVerificationRequest.verifier,
+      JSON.stringify({
+        code: code,
+        isValid: false,
+      }),
+      'EX',
+      this.redisExpire,
+    );
     await this.authContext.sendVerification(
       sendVerificationRequest.verifier,
       message,
     );
     return of({
-      verificationToken: 'ok',
+      verificationToken: message,
     });
   }
 

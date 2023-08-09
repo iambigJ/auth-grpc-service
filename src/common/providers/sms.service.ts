@@ -18,7 +18,6 @@ export class SmsService implements ISmsService {
 
   async send(mobile: string, message: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      console.log({ mobile, message });
       resolve({ mobile, message });
       this.api.Send(
         {

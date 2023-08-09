@@ -8,9 +8,9 @@ import {
 } from './auth.interface';
 import { AuthService } from './auth.service';
 import { SendVerificationDto } from './dto/auth.dto';
-import { GrpcExceptionFilter } from '../rpc.filter';
+import { GrpcExceptionFilter } from '../common/rpc.filter';
 import { AuthValidator } from './auth.validator';
-import { RPC_BAD_REQUEST } from "../common/messages";
+import { RPC_BAD_REQUEST } from '../common/messages';
 
 @Controller()
 export class AuthController {

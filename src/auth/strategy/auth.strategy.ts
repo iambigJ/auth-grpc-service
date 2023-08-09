@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SmsService } from '../../common/sms.service';
+import { SmsService } from '../../common/providers/sms.service';
 
 export interface AuthStrategy {
   verify();
