@@ -20,8 +20,4 @@ export class AuthEmailStrategy implements AuthStrategy {
   sendVerification(verifier: string, message: string) {
     return this.emailService.send(verifier, message);
   }
-
-  verifyVerification() {
-    return 'verifyVerification()';
-  }
 }

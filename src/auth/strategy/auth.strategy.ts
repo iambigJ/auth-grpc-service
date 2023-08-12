@@ -5,7 +5,6 @@ export interface AuthStrategy {
   login();
   signup();
   sendVerification(verifier: string, message: string);
-  verifyVerification();
 }
 @Injectable()
 export class AuthContext {
@@ -28,9 +27,5 @@ export class AuthContext {
 
   async sendVerification(verifier: string, message: string) {
     return await this.strategy.sendVerification(verifier, message);
-  }
-
-  verifyVerification() {
-    return this.strategy.verifyVerification();
   }
 }

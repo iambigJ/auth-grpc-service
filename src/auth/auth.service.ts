@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   SendVerificationRequest,
   SendVerificationResponse,
-  VerifyValidationCodeRequest,
   VerifyValidationCodeResponse,
 } from './auth.interface';
 import { Observable, of } from 'rxjs';
@@ -12,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { UtilsService } from '../common/providers/utils/utils.service';
 import { AuthMobileStrategy } from './strategy/auth.mobile.strategy';
 import { AuthEmailStrategy } from './strategy/auth.email.strategy';
+import { VerifyValidationCodeDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -53,11 +53,41 @@ export class AuthService {
   }
 
   async verifyValidationCode(
-    verifyValidationCodeRequest: VerifyValidationCodeRequest,
+    verifyValidationCodeRequest: VerifyValidationCodeDto,
   ): Promise<Observable<VerifyValidationCodeResponse>> {
-    console.log('ssssssseeeeeee', verifyValidationCodeRequest);
-    return of({
-      message: 'Ok',
-    });
+    try {
+      const { code, verifier } = verifyValidationCodeRequest;
+      const savedCode = await this.redisClient.get(verifier);
+      if (!savedCode) {
+        return of({
+          message: 'Verification failed!',
+        });
+      }
+      const toObjectCode = JSON.parse(savedCode) as FromRedis;
+      if (String(toObjectCode.code) !== code) {
+        return of({
+          message: 'Code is Wrong!',
+        });
+      }
+      await this.redisClient.set(
+        verifier,
+        JSON.stringify({
+          code: code,
+          isValid: true,
+        }),
+        'EX',
+        this.redisExpire,
+      );
+      return of({
+        message: 'Ok',
+      });
+    } catch (e) {
+      console.log({ e });
+    }
   }
+}
+
+export interface FromRedis {
+  code: string;
+  isVerify: boolean;
 }

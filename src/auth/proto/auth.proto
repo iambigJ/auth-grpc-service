@@ -40,8 +40,9 @@ message SendVerificationResponse {
 }
 
 message VerifyValidationCodeRequest {
-  string verificationToken = 1;
+  string verifier = 1;
   string code = 2;
+  string strategy = 3;
 }
 
 message VerifyValidationResponse {

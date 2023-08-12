@@ -9,3 +9,17 @@ export class SendVerificationDto {
   @IsString()
   verifier: string;
 }
+
+export class VerifyValidationCodeDto {
+  @IsNotEmpty()
+  @IsString()
+  strategy: string;
+
+  @IsNotEmpty()
+  @IsString()
+  verifier: string;
+
+  @IsNotEmpty()
+  @IsString()
+  code: string;
+}

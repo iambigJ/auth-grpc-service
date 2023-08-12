@@ -19,8 +19,4 @@ export class AuthMobileStrategy implements AuthStrategy {
   async sendVerification(verifier: string, message: string): Promise<any> {
     return await this.smsService.send(verifier, message);
   }
-
-  verifyVerification() {
-    return 'mverifyVerification()';
-  }
 }

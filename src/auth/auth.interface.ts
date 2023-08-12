@@ -34,8 +34,9 @@ export interface SendVerificationResponse {
 }
 
 export interface VerifyValidationCodeRequest {
-  verificationToken: string;
+  verifier: string;
   code: string;
+  strategy: string;
 }
 
 export interface VerifyValidationCodeResponse {

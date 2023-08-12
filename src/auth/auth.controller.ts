@@ -3,11 +3,10 @@ import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import {
   SendVerificationResponse,
-  VerifyValidationCodeRequest,
   VerifyValidationCodeResponse,
 } from './auth.interface';
 import { AuthService } from './auth.service';
-import { SendVerificationDto } from './dto/auth.dto';
+import { SendVerificationDto, VerifyValidationCodeDto } from './dto/auth.dto';
 import { GrpcExceptionFilter } from '../common/rpc.filter';
 import { AuthValidator } from './auth.validator';
 import { RPC_BAD_REQUEST } from '../common/messages';
@@ -30,10 +29,8 @@ export class AuthController {
   }
   @GrpcMethod('AuthService', 'VerifyValidationCode')
   async verifyValidationCode(
-    verifyValidationCodeRequest: VerifyValidationCodeRequest,
+    verifyValidationCodeDto: VerifyValidationCodeDto,
   ): Promise<Observable<VerifyValidationCodeResponse>> {
-    return await this.authService.verifyValidationCode(
-      verifyValidationCodeRequest,
-    );
+    return await this.authService.verifyValidationCode(verifyValidationCodeDto);
   }
 }
