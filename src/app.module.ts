@@ -6,6 +6,8 @@ import { EmailModule } from './email/email.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import { PlansModule } from './plans/plans.module';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { ConfigService } from '@nestjs/config';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        migrations: ['../db/migrate'],
+        entities: [path.join(__dirname + '/**/*.entity{.ts}')],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -28,6 +30,7 @@ import { ConfigService } from '@nestjs/config';
     RedisModule,
     EmailModule,
     UsersModule,
+    PlansModule,
   ],
 })
 export class AppModule {}
