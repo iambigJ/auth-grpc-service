@@ -6,7 +6,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start:dev:db": "./src/scripts/start-db.sh",
+    "create:db": "sh ./scripts/start-db.sh",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",
     "migration:generate": "npm run typeorm -- -d ./src/config/typeorm.ts migration:create",
     "migration:run": "npm run typeorm -- -d ./src/config/typeorm.ts migration:run ",

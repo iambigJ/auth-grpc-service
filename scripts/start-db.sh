@@ -2,7 +2,7 @@
 set -e
 
 # shellcheck disable=SC2046
-export $(grep -v '^#' ../.env | xargs)
+export $(grep -v '^#' .env | xargs)
 
 HOST=$DB_HOST;
 PORT=$DB_PORT;
