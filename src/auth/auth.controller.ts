@@ -1,4 +1,4 @@
-import { Controller, UseFilters } from '@nestjs/common';
+import { Body, Controller, UseFilters, UsePipes } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import {
@@ -6,10 +6,15 @@ import {
   VerifyValidationCodeResponse,
 } from './auth.interface';
 import { AuthService } from './auth.service';
-import { SendVerificationDto, VerifyValidationCodeDto } from './dto/auth.dto';
+import {
+  SendVerificationDto,
+  SignupDto,
+  VerifyValidationCodeDto,
+} from './dto/auth.dto';
 import { GrpcExceptionFilter } from '../common/rpc.filter';
 import { AuthValidator } from './auth.validator';
 import { RPC_BAD_REQUEST } from '../common/messages';
+import { HashPasswordPipe } from './mapper/auth.transform.pipe';
 
 @Controller()
 export class AuthController {
@@ -32,5 +37,12 @@ export class AuthController {
     verifyValidationCodeDto: VerifyValidationCodeDto,
   ): Promise<Observable<VerifyValidationCodeResponse>> {
     return await this.authService.verifyValidationCode(verifyValidationCodeDto);
+  }
+
+  @GrpcMethod('AuthService', 'Signup')
+  async signup(
+    @Body(HashPasswordPipe) signupDto: SignupDto,
+  ): Promise<Observable<any>> {
+    return await this.authService.signup(signupDto);
   }
 }

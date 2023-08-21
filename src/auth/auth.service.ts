@@ -1,17 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Observable, of } from 'rxjs';
 import {
   SendVerificationRequest,
   SendVerificationResponse,
   VerifyValidationCodeResponse,
 } from './auth.interface';
-import { Observable, of } from 'rxjs';
 import { AuthContext } from './strategy/auth.strategy';
 import { REDIS_CLIENT, RedisClient } from '../common/redis/redis.types';
-import { ConfigService } from '@nestjs/config';
 import { UtilsService } from '../common/providers/utils/utils.service';
 import { AuthMobileStrategy } from './strategy/auth.mobile.strategy';
 import { AuthEmailStrategy } from './strategy/auth.email.strategy';
-import { VerifyValidationCodeDto } from './dto/auth.dto';
+import { SignupDto, VerifyValidationCodeDto } from './dto/auth.dto';
+import { UsersService } from '../users/users.service';
+import { AuthMapper } from './mapper/auth.mapper';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +24,8 @@ export class AuthService {
     private readonly authMobileStrategy: AuthMobileStrategy,
     private readonly authEmailStrategy: AuthEmailStrategy,
     private readonly configService: ConfigService,
+    private jwtService: JwtService,
+    private readonly userService: UsersService,
     @Inject(REDIS_CLIENT) private readonly redisClient: RedisClient,
   ) {
     this.redisExpire = this.configService.get<number>('REDIS_EXPIRE');
@@ -84,6 +89,15 @@ export class AuthService {
     } catch (e) {
       console.log({ e });
     }
+  }
+
+  async signup(singUpDto: SignupDto): Promise<Observable<any>> {
+    const createUserDto = AuthMapper.toPersistence(singUpDto);
+    const user = await this.userService.create(createUserDto);
+    const payload = { sub: user.id };
+    return of({
+      token: await this.jwtService.signAsync(payload),
+    });
   }
 }
 

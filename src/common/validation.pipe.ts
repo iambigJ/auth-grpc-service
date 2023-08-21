@@ -1,10 +1,21 @@
-import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
+import {
+  PipeTransform,
+  Injectable,
+  ArgumentMetadata,
+  ValidationPipe,
+} from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
-export class ValidationPipe implements PipeTransform<any> {
+export class ValidationPipeCustom
+  extends ValidationPipe
+  implements PipeTransform<any>
+{
+  constructor(options) {
+    super(options);
+  }
   async transform(value: any, { metatype }: ArgumentMetadata) {
     if (!metatype || !this.toValidate(metatype)) {
       return value;
@@ -16,9 +27,7 @@ export class ValidationPipe implements PipeTransform<any> {
     }
     return value;
   }
-
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  private toValidate(metatype: Function): boolean {
+  toValidate(metatype: any): boolean {
     // eslint-disable-next-line @typescript-eslint/ban-types
     const types: Function[] = [String, Boolean, Number, Array, Object];
     return !types.includes(metatype);

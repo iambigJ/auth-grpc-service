@@ -6,13 +6,13 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { User } from '../users/user.entity';
+import { Users } from '../users/users.entity';
 
 interface PlanData {
   [key: string]: any;
 }
 
-@Entity()
+@Entity({ name: 'Plan' })
 export class Plan {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -29,6 +29,6 @@ export class Plan {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @OneToMany(() => User, (user) => user.plan)
-  user: User[];
+  @OneToMany(() => Users, (user) => user.plan)
+  user: Users[];
 }

@@ -7,7 +7,8 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
-import * as path from 'path';
+import { Users } from './users/users.entity';
+import { Plan } from './plans/plans.entity';
 
 @Module({
   imports: [
@@ -20,8 +21,10 @@ import * as path from 'path';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [path.join(__dirname + '/**/*.entity{.ts}')],
+        entities: [Users, Plan],
+        //TODO: remove in production
         synchronize: true,
+        logging: false,
       }),
       inject: [ConfigService],
     }),

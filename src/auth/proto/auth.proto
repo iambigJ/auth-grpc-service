@@ -1,6 +1,7 @@
 // auth.proto
-
 syntax = "proto3";
+
+import "google/protobuf/any.proto";
 
 package auth;
 
@@ -19,11 +20,12 @@ message UserProfile {
 
 message SignupRequest {
   string strategy = 1;
-  string username = 2;
-  string password = 3;
-  string referralCode = 4;
-  UserProfile profile = 5;
-  string token = 6;
+  string email = 2;
+  string mobile = 3;
+  string password = 4;
+  string referralCode = 5;
+  UserProfile profile = 6;
+  string token = 7;
 }
 
 message AuthResponse {
@@ -49,9 +51,18 @@ message VerifyValidationResponse {
   string message = 1;
 }
 
+message VerifyTokenRequest {
+  string token = 1;
+}
+
+message VerifyTokenResponse {
+  google.protobuf.Any decoded = 1;
+}
+
 service AuthService {
   rpc Login(LoginRequest) returns (AuthResponse);
   rpc Signup(SignupRequest) returns (AuthResponse);
   rpc SendVerification(SendVerificationRequest) returns (SendVerificationResponse);
   rpc VerifyValidationCode(VerifyValidationCodeRequest) returns (VerifyValidationResponse);
+  rpc Verify(VerifyTokenRequest) returns (VerifyTokenResponse);
 }

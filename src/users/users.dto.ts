@@ -1,37 +1,18 @@
 import {
-  IsNotEmpty,
-  IsString,
+  IsBoolean,
   IsEmail,
+  IsNotEmpty, IsOptional,
+  IsString,
   MinLength,
-  ValidateIf,
   Validate,
-} from 'class-validator';
+  ValidateIf
+} from "class-validator";
+import {
+  IsMobile,
+  IsPassword,
+  UserExistsRule,
+} from '../auth/custom.validator';
 import { Type } from 'class-transformer';
-import { IsMobile, IsPassword, UserExistsRule } from '../custom.validator';
-
-export class SendVerificationDto {
-  @IsNotEmpty()
-  @IsString()
-  strategy: string;
-
-  @IsNotEmpty()
-  @IsString()
-  verifier: string;
-}
-
-export class VerifyValidationCodeDto {
-  @IsNotEmpty()
-  @IsString()
-  strategy: string;
-
-  @IsNotEmpty()
-  @IsString()
-  verifier: string;
-
-  @IsNotEmpty()
-  @IsString()
-  code: string;
-}
 
 export class UserProfileDto {
   @IsString()
@@ -47,12 +28,7 @@ export class UserProfileDto {
   defaultAiModel: string;
 }
 
-export class SignupDto {
-  @IsNotEmpty()
-  @IsString()
-  strategy: string;
-
-  @Validate(UserExistsRule)
+export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail()
   @ValidateIf((o) => o.strategy === 'email')
@@ -66,8 +42,6 @@ export class SignupDto {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(4)
-  @IsPassword()
   password: string;
 
   @IsNotEmpty()
@@ -77,7 +51,11 @@ export class SignupDto {
   @Type(() => UserProfileDto)
   profile: UserProfileDto;
 
-  @IsNotEmpty()
+  @IsBoolean()
+  @IsOptional()
+  emailVerified?: boolean;
+
   @IsString()
-  token: string;
+  @IsNotEmpty()
+  role: string;
 }
