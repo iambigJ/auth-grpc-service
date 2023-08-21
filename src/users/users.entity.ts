@@ -16,7 +16,6 @@ interface Profile {
 }
 
 @Entity({ name: 'Users' })
-@Index(['mobile', 'email'], { unique: true })
 export class Users {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -38,10 +37,10 @@ export class Users {
   @JoinColumn({ name: 'plan_id' })
   plan: Plan;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   mobile: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   email: string;
 
   @Column()

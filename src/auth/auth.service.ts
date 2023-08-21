@@ -15,6 +15,7 @@ import { AuthEmailStrategy } from './strategy/auth.email.strategy';
 import { SignupDto, VerifyValidationCodeDto } from './dto/auth.dto';
 import { UsersService } from '../users/users.service';
 import { AuthMapper } from './mapper/auth.mapper';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AuthService {
@@ -92,6 +93,22 @@ export class AuthService {
   }
 
   async signup(singUpDto: SignupDto): Promise<Observable<any>> {
+    const verification = await this.redisClient.get(
+      singUpDto.mobile || singUpDto.email,
+    );
+    if (!verification) {
+      throw new RpcException({
+        code: 3,
+        message: 'mobile or email not verified!',
+      });
+    }
+    const toObjectCode = JSON.parse(verification) as FromRedis;
+    if (!toObjectCode.isValid) {
+      throw new RpcException({
+        code: 3,
+        message: 'mobile or email not verified!',
+      });
+    }
     const createUserDto = AuthMapper.toPersistence(singUpDto);
     const user = await this.userService.create(createUserDto);
     const payload = { sub: user.id };
@@ -103,5 +120,5 @@ export class AuthService {
 
 export interface FromRedis {
   code: string;
-  isVerify: boolean;
+  isValid: boolean;
 }
