@@ -1,17 +1,14 @@
 import {
   IsBoolean,
   IsEmail,
-  IsNotEmpty, IsOptional,
+  IsNotEmpty,
+  IsOptional,
   IsString,
   MinLength,
   Validate,
-  ValidateIf
-} from "class-validator";
-import {
-  IsMobile,
-  IsPassword,
-  UserExistsRule,
-} from '../auth/custom.validator';
+  ValidateIf,
+} from 'class-validator';
+import { IsMobile, IsPassword, UserExistsRule } from '../auth/custom.validator';
 import { Type } from 'class-transformer';
 
 export class UserProfileDto {
