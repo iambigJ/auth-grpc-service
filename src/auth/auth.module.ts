@@ -11,6 +11,7 @@ import { AuthMobileStrategy } from './strategy/auth.mobile.strategy';
 import { jwtConstants } from '../config/constants';
 import { UsersModule } from '../users/users.module';
 import { UserExistsRule } from './custom.validator';
+import { PlansModule } from '../plans/plans.module';
 
 @Module({
   controllers: [AuthController],
@@ -26,6 +27,7 @@ import { UserExistsRule } from './custom.validator';
   ],
   imports: [
     UsersModule,
+    PlansModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

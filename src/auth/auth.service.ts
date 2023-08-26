@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Observable, of } from 'rxjs';
 import {
+  TokenClaim,
   SendVerificationRequest,
   SendVerificationResponse,
   VerifyValidationCodeResponse,
@@ -12,10 +13,12 @@ import { REDIS_CLIENT, RedisClient } from '../common/redis/redis.types';
 import { UtilsService } from '../common/providers/utils/utils.service';
 import { AuthMobileStrategy } from './strategy/auth.mobile.strategy';
 import { AuthEmailStrategy } from './strategy/auth.email.strategy';
-import { SignupDto, VerifyValidationCodeDto } from './dto/auth.dto';
+import { LoginDto, SignupDto, VerifyValidationCodeDto } from './dto/auth.dto';
 import { UsersService } from '../users/users.service';
 import { AuthMapper } from './mapper/auth.mapper';
 import { RpcException } from '@nestjs/microservices';
+import { Users } from '../users/users.entity';
+import { PlansService } from '../plans/plans.service';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +30,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private jwtService: JwtService,
     private readonly userService: UsersService,
+    private readonly planService: PlansService,
     @Inject(REDIS_CLIENT) private readonly redisClient: RedisClient,
   ) {
     this.redisExpire = this.configService.get<number>('REDIS_EXPIRE');
@@ -93,9 +97,8 @@ export class AuthService {
   }
 
   async signup(singUpDto: SignupDto): Promise<Observable<any>> {
-    const verification = await this.redisClient.get(
-      singUpDto.mobile || singUpDto.email,
-    );
+    const verifier = singUpDto.mobile || singUpDto.email;
+    const verification = await this.redisClient.get(verifier);
     if (!verification) {
       throw new RpcException({
         code: 3,
@@ -109,12 +112,47 @@ export class AuthService {
         message: 'mobile or email not verified!',
       });
     }
-    const createUserDto = AuthMapper.toPersistence(singUpDto);
+    await this.redisClient.del(verifier);
+    const plan = await this.planService.findByName('default');
+    const createUserData = { ...singUpDto, planId: plan.id };
+    const createUserDto = AuthMapper.toPersistence(createUserData);
     const user = await this.userService.create(createUserDto);
     const payload = { sub: user.id };
     return of({
       token: await this.jwtService.signAsync(payload),
     });
+  }
+
+  async login(loginDto: LoginDto): Promise<any> {
+    const isUserExits = await this.userService.findByEmailOrMobile(
+      loginDto.email,
+      loginDto.mobile,
+    );
+    const token = await this.generateToken(isUserExits);
+    return of({
+      token,
+    });
+  }
+
+  async generateToken(userData: Users): Promise<string> {
+    const tokenClaim = this.toClaim(userData);
+    return await this.jwtService.signAsync(tokenClaim);
+  }
+
+  toClaim(userData: Users): TokenClaim {
+    return {
+      id: userData.id,
+      role: userData.role,
+      mobile: userData.mobile,
+      email: userData.email,
+      payerId: userData.payerId,
+      planId: userData.plan.id,
+      walletId: 'walleettt',
+    };
+  }
+
+  async storeToken(verifier: string, token: string): Promise<void> {
+    this.redisClient.set(verifier, token, 'EX', this.redisExpire);
   }
 }
 

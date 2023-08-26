@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   ManyToOne,
   Generated,
-  Index,
 } from 'typeorm';
 import { Plan } from '../plans/plans.entity';
 import { JoinColumn } from 'typeorm';
@@ -29,13 +28,19 @@ export class Users {
   @Column({
     type: 'bigint',
     unique: true,
+    name: 'payer_id',
   })
   @Generated('increment')
-  payer_id: bigint;
+  payerId: bigint;
 
   @ManyToOne(() => Plan, (plan) => plan.id)
   @JoinColumn({ name: 'plan_id' })
   plan: Plan;
+
+  @Column({
+    name: 'plan_id',
+  })
+  planId: string;
 
   @Column({ nullable: true, unique: true })
   mobile: string;

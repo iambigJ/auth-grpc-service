@@ -7,7 +7,7 @@ export class User1691930094047 implements MigrationInterface {
       (
           id              uuid not null primary key DEFAULT uuid_generate_v4(),
           payer_id        bigserial unique,
-          plan_id         uuid references "Plans" on delete set null,
+          plan_id         uuid,
           mobile          varchar(255) constraint "Users_mobile_key1" unique,
           role            varchar(255) not null,
           password        text,
@@ -17,7 +17,8 @@ export class User1691930094047 implements MigrationInterface {
           "deletedAt"     timestamp,
           email           varchar(255) unique,
           "emailVerified" boolean default false,
-          "referralCode"  text default substr(md5((random())::text), 1, 8) not null unique
+          "referralCode"  text default substr(md5((random())::text), 1, 8) not null unique,
+          CONSTRAINT fk_plan FOREIGN KEY(plan_id) REFERENCES "Plans"(id) on delete set null
       );
       `);
   }

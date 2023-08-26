@@ -7,9 +7,9 @@
   "license": "MIT",
   "scripts": {
     "create:db": "sh ./scripts/start-db.sh",
-    "typeorm": "ts-node ./node_modules/typeorm/cli.js",
-    "migration:generate": "npm run typeorm -- -d ./src/config/typeorm.ts migration:create",
-    "migration:run": "npm run typeorm -- -d ./src/config/typeorm.ts migration:run ",
+    "typeorm": "ts-node ./node_modules/.bin/typeorm",
+    "migration:create": "typeorm migration:create",
+    "migration:run": "npm run typeorm -- -d ./src/config/typeorm.ts migration:run",
     "migration:revert": "npm run typeorm migration:revert",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

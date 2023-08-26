@@ -23,7 +23,7 @@ import { Plan } from './plans/plans.entity';
         database: configService.get<string>('DB_NAME'),
         entities: [Users, Plan],
         //TODO: remove in production
-        synchronize: true,
+        synchronize: false,
         logging: false,
       }),
       inject: [ConfigService],

@@ -8,11 +8,11 @@ import {
 } from 'typeorm';
 import { Users } from '../users/users.entity';
 
-interface PlanData {
+export interface PlanData {
   [key: string]: any;
 }
 
-@Entity({ name: 'Plan' })
+@Entity({ name: 'Plans' })
 export class Plan {
   @PrimaryGeneratedColumn('uuid')
   id: string;

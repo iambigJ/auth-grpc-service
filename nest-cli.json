@@ -10,7 +10,11 @@
         "outDir": "dist/src",
         "watchAssets": true
       },
-      "**/*.ejs"
+      {
+        "include": "/email/template/*.ejs",
+        "outDir": "dist/src",
+        "watchAssets": true
+      }
     ],
     "watchAssets": true
   }

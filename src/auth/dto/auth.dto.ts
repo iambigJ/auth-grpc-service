@@ -58,6 +58,7 @@ export class SignupDto {
   @ValidateIf((o) => o.strategy === 'email')
   email: string;
 
+  @Validate(UserExistsRule)
   @IsNotEmpty()
   @IsString()
   @ValidateIf((o) => o.strategy === 'mobile')
@@ -80,4 +81,27 @@ export class SignupDto {
   @IsNotEmpty()
   @IsString()
   token: string;
+}
+
+export class LoginDto {
+  @IsNotEmpty()
+  @IsString()
+  strategy: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  @ValidateIf((o) => o.strategy === 'email')
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ValidateIf((o) => o.strategy === 'mobile')
+  @IsMobile()
+  mobile: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(4)
+  @IsPassword()
+  password: string;
 }

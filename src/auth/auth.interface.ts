@@ -42,3 +42,13 @@ export interface VerifyValidationCodeRequest {
 export interface VerifyValidationCodeResponse {
   message: string;
 }
+
+export interface TokenClaim {
+  id: string;
+  role: string;
+  mobile: string;
+  email: string;
+  payerId: bigint;
+  planId: string;
+  walletId: string;
+}

@@ -4,11 +4,10 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  MinLength,
-  Validate,
+  IsUUID,
   ValidateIf,
 } from 'class-validator';
-import { IsMobile, IsPassword, UserExistsRule } from '../auth/custom.validator';
+import { IsMobile } from '../auth/custom.validator';
 import { Type } from 'class-transformer';
 
 export class UserProfileDto {
@@ -55,4 +54,9 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   role: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  planId: string;
 }
