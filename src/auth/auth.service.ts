@@ -19,6 +19,7 @@ import { AuthMapper } from './mapper/auth.mapper';
 import { RpcException } from '@nestjs/microservices';
 import { Users } from '../users/users.entity';
 import { PlansService } from '../plans/plans.service';
+import { RPC_BAD_REQUEST } from '../common/messages';
 
 @Injectable()
 export class AuthService {
@@ -144,12 +145,12 @@ export class AuthService {
     });
   }
 
-  async generateToken(userData: Users): Promise<string> {
+  private async generateToken(userData: Users): Promise<string> {
     const tokenClaim = this.toClaim(userData);
     return await this.jwtService.signAsync(tokenClaim);
   }
 
-  toClaim(userData: Users): TokenClaim {
+  private toClaim(userData: Users): TokenClaim {
     return {
       id: userData.id,
       role: userData.role,
@@ -158,11 +159,25 @@ export class AuthService {
       payerId: userData.payerId,
       planId: userData.planId,
       walletId: 'walleettt',
+      //TODO: add walletId
     };
   }
 
   async storeToken(verifier: string, token: string): Promise<void> {
+    //TODO: store token after login
     this.redisClient.set(verifier, token, 'EX', this.redisExpire);
+  }
+
+  async verifyToken(token: string): Promise<Observable<TokenClaim>> {
+    try {
+      const decoded = await this.jwtService.verifyAsync(token);
+      return of(this.toClaim(decoded));
+    } catch (e) {
+      throw new RpcException({
+        code: 3,
+        message: RPC_BAD_REQUEST,
+      });
+    }
   }
 }
 

@@ -57,7 +57,13 @@ message VerifyTokenRequest {
 }
 
 message VerifyTokenResponse {
-  google.protobuf.Any decoded = 1;
+  string id = 1;
+  string role = 2;
+  optional string mobile = 3;
+  optional string email = 4;
+  string payerId = 5;
+  string planId = 6;
+  string walletId = 7;
 }
 
 service AuthService {
@@ -65,5 +71,5 @@ service AuthService {
   rpc Signup(SignupRequest) returns (AuthResponse);
   rpc SendVerification(SendVerificationRequest) returns (SendVerificationResponse);
   rpc VerifyValidationCode(VerifyValidationCodeRequest) returns (VerifyValidationResponse);
-  rpc Verify(VerifyTokenRequest) returns (VerifyTokenResponse);
+  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
 }

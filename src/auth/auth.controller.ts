@@ -3,6 +3,7 @@ import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import {
   SendVerificationResponse,
+  TokenClaim,
   VerifyValidationCodeResponse,
 } from './auth.interface';
 import { AuthService } from './auth.service';
@@ -10,6 +11,7 @@ import {
   LoginDto,
   SendVerificationDto,
   SignupDto,
+  VerifyTokenDto,
   VerifyValidationCodeDto,
 } from './dto/auth.dto';
 import { GrpcExceptionFilter } from '../common/rpc.filter';
@@ -50,5 +52,12 @@ export class AuthController {
   @GrpcMethod('AuthService', 'Login')
   async Login(loginDto: LoginDto): Promise<Observable<any>> {
     return await this.authService.login(loginDto);
+  }
+
+  @GrpcMethod('AuthService', 'VerifyToken')
+  async VerifyToken(
+    verifyTokenDto: VerifyTokenDto,
+  ): Promise<Observable<TokenClaim>> {
+    return await this.authService.verifyToken(verifyTokenDto.token);
   }
 }

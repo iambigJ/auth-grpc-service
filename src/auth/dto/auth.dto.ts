@@ -5,6 +5,7 @@ import {
   MinLength,
   ValidateIf,
   Validate,
+  IsJWT,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsMobile, IsPassword, UserExistsRule } from '../custom.validator';
@@ -104,4 +105,10 @@ export class LoginDto {
   @MinLength(4)
   @IsPassword()
   password: string;
+}
+
+export class VerifyTokenDto {
+  @IsJWT()
+  @IsNotEmpty()
+  token: string;
 }
