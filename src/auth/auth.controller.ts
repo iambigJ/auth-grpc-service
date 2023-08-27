@@ -48,9 +48,7 @@ export class AuthController {
   }
 
   @GrpcMethod('AuthService', 'Login')
-  async Login(
-    @Body(HashPasswordPipe) loginDto: LoginDto,
-  ): Promise<Observable<any>> {
+  async Login(loginDto: LoginDto): Promise<Observable<any>> {
     return await this.authService.login(loginDto);
   }
 }

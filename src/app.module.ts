@@ -24,7 +24,7 @@ import { Plan } from './plans/plans.entity';
         entities: [Users, Plan],
         //TODO: remove in production
         synchronize: false,
-        logging: false,
+        logging: true,
       }),
       inject: [ConfigService],
     }),

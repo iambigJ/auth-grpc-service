@@ -124,11 +124,21 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<any> {
-    const isUserExits = await this.userService.findByEmailOrMobile(
+    const user = await this.userService.findByEmailOrMobile(
       loginDto.email,
       loginDto.mobile,
     );
-    const token = await this.generateToken(isUserExits);
+    const isCorrect = await UtilsService.comparePass(
+      loginDto.password,
+      user.password,
+    );
+    if (!isCorrect) {
+      throw new RpcException({
+        code: 3,
+        message: 'email/mobile or password is incorrect',
+      });
+    }
+    const token = await this.generateToken(user);
     return of({
       token,
     });
@@ -146,7 +156,7 @@ export class AuthService {
       mobile: userData.mobile,
       email: userData.email,
       payerId: userData.payerId,
-      planId: userData.plan.id,
+      planId: userData.planId,
       walletId: 'walleettt',
     };
   }
