@@ -52,3 +52,12 @@ export interface TokenClaim {
   planId: string;
   walletId: string;
 }
+
+export interface RefreshTokenResponse {
+  token: string;
+}
+
+export interface Tokens {
+  token: string;
+  refreshToken: string;
+}

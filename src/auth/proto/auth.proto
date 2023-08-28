@@ -31,6 +31,7 @@ message SignupRequest {
 
 message AuthResponse {
   string token = 1;
+  string refreshToken = 2;
 }
 
 message SendVerificationRequest {
@@ -66,10 +67,19 @@ message VerifyTokenResponse {
   string walletId = 7;
 }
 
+message RefreshTokenRequest {
+  string token = 1;
+}
+
+message RefreshTokenResponse {
+  string token = 1;
+}
+
 service AuthService {
   rpc Login(LoginRequest) returns (AuthResponse);
   rpc Signup(SignupRequest) returns (AuthResponse);
   rpc SendVerification(SendVerificationRequest) returns (SendVerificationResponse);
   rpc VerifyValidationCode(VerifyValidationCodeRequest) returns (VerifyValidationResponse);
   rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
 }

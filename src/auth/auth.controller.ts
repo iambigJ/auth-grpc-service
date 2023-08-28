@@ -2,6 +2,7 @@ import { Body, Controller, UseFilters } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import {
+  RefreshTokenResponse,
   SendVerificationResponse,
   TokenClaim,
   VerifyValidationCodeResponse,
@@ -9,6 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import {
   LoginDto,
+  RefreshTokenDto,
   SendVerificationDto,
   SignupDto,
   VerifyTokenDto,
@@ -50,7 +52,7 @@ export class AuthController {
   }
 
   @GrpcMethod('AuthService', 'Login')
-  async Login(loginDto: LoginDto): Promise<Observable<any>> {
+  async login(loginDto: LoginDto): Promise<Observable<any>> {
     return await this.authService.login(loginDto);
   }
 
@@ -59,5 +61,12 @@ export class AuthController {
     verifyTokenDto: VerifyTokenDto,
   ): Promise<Observable<TokenClaim>> {
     return await this.authService.verifyToken(verifyTokenDto.token);
+  }
+
+  @GrpcMethod('AuthService', 'RefreshToken')
+  async refreshToken(
+    refreshTokenDto: RefreshTokenDto,
+  ): Promise<Observable<RefreshTokenResponse>> {
+    return await this.authService.refreshToken(refreshTokenDto.token);
   }
 }

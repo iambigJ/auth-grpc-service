@@ -7,6 +7,8 @@ import {
   SendVerificationRequest,
   SendVerificationResponse,
   VerifyValidationCodeResponse,
+  RefreshTokenResponse,
+  Tokens,
 } from './auth.interface';
 import { AuthContext } from './strategy/auth.strategy';
 import { REDIS_CLIENT, RedisClient } from '../common/redis/redis.types';
@@ -23,7 +25,8 @@ import { RPC_BAD_REQUEST } from '../common/messages';
 
 @Injectable()
 export class AuthService {
-  private readonly redisExpire: number;
+  private readonly redisAuthExpire: number;
+  private readonly redisRefreshExpire: number;
   constructor(
     private readonly authContext: AuthContext,
     private readonly authMobileStrategy: AuthMobileStrategy,
@@ -34,7 +37,9 @@ export class AuthService {
     private readonly planService: PlansService,
     @Inject(REDIS_CLIENT) private readonly redisClient: RedisClient,
   ) {
-    this.redisExpire = this.configService.get<number>('REDIS_EXPIRE');
+    this.redisAuthExpire = this.configService.get<number>(
+      'REDIS_JWT_EXPIRE_TIME',
+    );
   }
   async sendVerification(
     sendVerificationRequest: SendVerificationRequest,
@@ -52,7 +57,7 @@ export class AuthService {
         isValid: false,
       }),
       'EX',
-      this.redisExpire,
+      this.redisAuthExpire,
     );
     await this.authContext.sendVerification(
       sendVerificationRequest.verifier,
@@ -87,7 +92,7 @@ export class AuthService {
           isValid: true,
         }),
         'EX',
-        this.redisExpire,
+        this.redisAuthExpire,
       );
       return of({
         message: 'Ok',
@@ -139,15 +144,38 @@ export class AuthService {
         message: 'email/mobile or password is incorrect',
       });
     }
-    const token = await this.generateToken(user);
+    const { token, refreshToken } = await this.generateTokens(user);
     return of({
       token,
+      refreshToken,
     });
   }
 
-  private async generateToken(userData: Users): Promise<string> {
+  private async generateToken(tokenClaim: TokenClaim): Promise<string> {
+    const token = await this.jwtService.signAsync(tokenClaim, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRE_TIME'),
+    });
+    await this.storeToken(tokenClaim.id, 'token', token);
+    return token;
+  }
+
+  private async generateRefreshToken(tokenClaim: TokenClaim): Promise<string> {
+    const refreshToken = await this.jwtService.signAsync(tokenClaim, {
+      secret: this.configService.get<string>('JWT_SECRET_REFRESH'),
+      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRE_TIME'),
+    });
+    await this.storeToken(tokenClaim.id, 'refresh', refreshToken);
+    return refreshToken;
+  }
+  private async generateTokens(userData: Users): Promise<Tokens> {
     const tokenClaim = this.toClaim(userData);
-    return await this.jwtService.signAsync(tokenClaim);
+    const token = await this.generateToken(tokenClaim);
+    const refreshToken = await this.generateRefreshToken(tokenClaim);
+    return {
+      token,
+      refreshToken,
+    };
   }
 
   private toClaim(userData: Users): TokenClaim {
@@ -163,19 +191,51 @@ export class AuthService {
     };
   }
 
-  async storeToken(verifier: string, token: string): Promise<void> {
-    //TODO: store token after login
-    this.redisClient.set(verifier, token, 'EX', this.redisExpire);
+  async storeToken(userId: string, type: string, token: string): Promise<void> {
+    await this.redisClient.set(
+      `${userId}-${type}`,
+      token,
+      'EX',
+      this.redisAuthExpire,
+    );
+  }
+
+  async verifyTokenAsync(token: string, secret: string): Promise<TokenClaim> {
+    const decoded = await this.jwtService.verifyAsync(token, { secret });
+    return this.toClaim(decoded);
   }
 
   async verifyToken(token: string): Promise<Observable<TokenClaim>> {
     try {
-      const decoded = await this.jwtService.verifyAsync(token);
-      return of(this.toClaim(decoded));
+      const decoded = await this.verifyTokenAsync(
+        token,
+        this.configService.get<string>('JWT_SECRET'),
+      );
+      return of(decoded);
     } catch (e) {
       throw new RpcException({
         code: 3,
         message: RPC_BAD_REQUEST,
+        data: e,
+      });
+    }
+  }
+
+  async refreshToken(
+    refreshToken: string,
+  ): Promise<Observable<RefreshTokenResponse>> {
+    try {
+      const decoded = await this.verifyTokenAsync(
+        refreshToken,
+        this.configService.get<string>('JWT_SECRET_REFRESH'),
+      );
+      const token = await this.generateToken(decoded);
+      return of({ token });
+    } catch (e) {
+      throw new RpcException({
+        code: 3,
+        message: RPC_BAD_REQUEST,
+        data: e,
       });
     }
   }

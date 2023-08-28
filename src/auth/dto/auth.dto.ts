@@ -112,3 +112,9 @@ export class VerifyTokenDto {
   @IsNotEmpty()
   token: string;
 }
+
+export class RefreshTokenDto {
+  @IsJWT()
+  @IsNotEmpty()
+  token: string;
+}

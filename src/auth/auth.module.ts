@@ -8,7 +8,6 @@ import { SmsService } from '../common/providers/sms.service';
 import { redisClientFactory } from '../common/redis/redis.factory';
 import { AuthEmailStrategy } from './strategy/auth.email.strategy';
 import { AuthMobileStrategy } from './strategy/auth.mobile.strategy';
-import { jwtConstants } from '../config/constants';
 import { UsersModule } from '../users/users.module';
 import { UserExistsRule } from './custom.validator';
 import { PlansModule } from '../plans/plans.module';
@@ -30,8 +29,6 @@ import { PlansModule } from '../plans/plans.module';
     PlansModule,
     JwtModule.register({
       global: true,
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '600s' },
     }),
   ],
 })
