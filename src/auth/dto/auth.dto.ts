@@ -124,3 +124,22 @@ export class LogoutDto {
   @IsNotEmpty()
   token: string;
 }
+
+export class ChangePasswordDto {
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(4)
+  @IsPassword()
+  oldPassword: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(4)
+  @IsPassword()
+  newPassword: string;
+
+  @IsJWT()
+  @IsNotEmpty()
+  @IsString()
+  token: string;
+}

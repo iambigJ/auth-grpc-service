@@ -1,4 +1,9 @@
-import { Body, Controller, UseFilters } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  UseFilters,
+  UseGuards,
+} from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import {
@@ -10,6 +15,7 @@ import {
 } from './auth.interface';
 import { AuthService } from './auth.service';
 import {
+  ChangePasswordDto,
   LoginDto,
   LogoutDto,
   RefreshTokenDto,
@@ -22,10 +28,16 @@ import { GrpcExceptionFilter } from '../common/rpc.filter';
 import { AuthValidator } from './auth.validator';
 import { RPC_BAD_REQUEST } from '../common/messages';
 import { HashPasswordPipe } from './mapper/auth.transform.pipe';
+import { AuthGuard } from './guard/auth.gaurd';
+import { Reflector } from '@nestjs/core';
+import { Metadata } from '@grpc/grpc-js';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private reflector: Reflector,
+  ) {}
   @GrpcMethod('AuthService', 'SendVerification')
   @UseFilters(GrpcExceptionFilter)
   async sendVerification(
@@ -75,5 +87,15 @@ export class AuthController {
   @GrpcMethod('AuthService', 'Logout')
   async logout(logoutDto: LogoutDto): Promise<Observable<LogoutResponse>> {
     return await this.authService.logout(logoutDto.token);
+  }
+
+  @UseGuards(AuthGuard)
+  @GrpcMethod('AuthService', 'ChangePassword')
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+    metadata: Metadata,
+  ): Promise<Observable<any>> {
+    const user = metadata.get('user')[0] as unknown as TokenClaim;
+    return await this.authService.changePassword(changePasswordDto, user?.id);
   }
 }

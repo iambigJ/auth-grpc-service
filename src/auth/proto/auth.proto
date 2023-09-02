@@ -83,6 +83,16 @@ message LogoutResponse {
   string message = 1;
 }
 
+message ChangePassRequest {
+  string oldPassword = 1;
+  string newPassword = 2;
+  string token = 3;
+}
+
+message ChangePassResponse {
+  string message = 1;
+}
+
 service AuthService {
   rpc Login(LoginRequest) returns (AuthResponse);
   rpc Signup(SignupRequest) returns (AuthResponse);
@@ -91,4 +101,5 @@ service AuthService {
   rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc ChangePassword(ChangePassRequest) returns (ChangePassResponse);
 }

@@ -16,7 +16,12 @@ import { REDIS_CLIENT, RedisClient } from '../common/redis/redis.types';
 import { UtilsService } from '../common/providers/utils/utils.service';
 import { AuthMobileStrategy } from './strategy/auth.mobile.strategy';
 import { AuthEmailStrategy } from './strategy/auth.email.strategy';
-import { LoginDto, SignupDto, VerifyValidationCodeDto } from './dto/auth.dto';
+import {
+  ChangePasswordDto,
+  LoginDto,
+  SignupDto,
+  VerifyValidationCodeDto,
+} from './dto/auth.dto';
 import { UsersService } from '../users/users.service';
 import { AuthMapper } from './mapper/auth.mapper';
 import { RpcException } from '@nestjs/microservices';
@@ -279,6 +284,28 @@ export class AuthService {
         data: e,
       });
     }
+  }
+
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+    userId: string,
+  ): Promise<any> {
+    const user = await this.userService.findById(userId);
+    const isCorrect = await UtilsService.comparePass(
+      changePasswordDto.oldPassword,
+      user.password,
+    );
+    if (!isCorrect) {
+      throw new RpcException({
+        code: 3,
+        message: 'password is incorrect',
+      });
+    }
+    const newHashedPassword = await UtilsService.hashPassword(
+      changePasswordDto.newPassword,
+    );
+    await this.userService.updateById(user.id, { password: newHashedPassword });
+    return of({ message: 'password is updated' });
   }
 }
 
