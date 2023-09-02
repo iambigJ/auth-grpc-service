@@ -2,6 +2,7 @@ import { Body, Controller, UseFilters } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import {
+  LogoutResponse,
   RefreshTokenResponse,
   SendVerificationResponse,
   TokenClaim,
@@ -10,6 +11,7 @@ import {
 import { AuthService } from './auth.service';
 import {
   LoginDto,
+  LogoutDto,
   RefreshTokenDto,
   SendVerificationDto,
   SignupDto,
@@ -68,5 +70,10 @@ export class AuthController {
     refreshTokenDto: RefreshTokenDto,
   ): Promise<Observable<RefreshTokenResponse>> {
     return await this.authService.refreshToken(refreshTokenDto.token);
+  }
+
+  @GrpcMethod('AuthService', 'Logout')
+  async logout(logoutDto: LogoutDto): Promise<Observable<LogoutResponse>> {
+    return await this.authService.logout(logoutDto.token);
   }
 }

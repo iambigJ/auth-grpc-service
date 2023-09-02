@@ -61,3 +61,7 @@ export interface Tokens {
   token: string;
   refreshToken: string;
 }
+
+export interface LogoutResponse {
+  messages: string;
+}

@@ -9,6 +9,7 @@ import {
   VerifyValidationCodeResponse,
   RefreshTokenResponse,
   Tokens,
+  LogoutResponse,
 } from './auth.interface';
 import { AuthContext } from './strategy/auth.strategy';
 import { REDIS_CLIENT, RedisClient } from '../common/redis/redis.types';
@@ -200,8 +201,25 @@ export class AuthService {
     );
   }
 
+  async readToken(userId: string, type: string): Promise<string> {
+    return this.redisClient.get(`${userId}-${type}`);
+  }
+
+  async removeToken(userId: string, type: string): Promise<void> {
+    await this.redisClient.del(`${userId}-${type}`);
+  }
+
   async verifyTokenAsync(token: string, secret: string): Promise<TokenClaim> {
     const decoded = await this.jwtService.verifyAsync(token, { secret });
+    const isInBlackList = await this.readToken(decoded.id, 'block_token');
+    const isTokenFound = await this.readToken(decoded.id, 'token');
+    if (isInBlackList || !isTokenFound) {
+      throw new RpcException({
+        code: 3,
+        message: RPC_BAD_REQUEST,
+        data: 'token is invalid',
+      });
+    }
     return this.toClaim(decoded);
   }
 
@@ -231,6 +249,29 @@ export class AuthService {
       );
       const token = await this.generateToken(decoded);
       return of({ token });
+    } catch (e) {
+      throw new RpcException({
+        code: 3,
+        message: RPC_BAD_REQUEST,
+        data: e,
+      });
+    }
+  }
+
+  async logout(token: string): Promise<Observable<LogoutResponse>> {
+    try {
+      const decoded = await this.verifyTokenAsync(
+        token,
+        this.configService.get<string>('JWT_SECRET'),
+      );
+      const refresh = await this.readToken(decoded.id, 'refresh');
+      await Promise.all([
+        this.removeToken(decoded.id, 'token'),
+        this.removeToken(decoded.id, 'refresh'),
+        this.storeToken(decoded.id, 'block_token', token),
+        this.storeToken(decoded.id, 'block_refresh', refresh),
+      ]);
+      return of({ messages: 'ok' });
     } catch (e) {
       throw new RpcException({
         code: 3,

@@ -118,3 +118,9 @@ export class RefreshTokenDto {
   @IsNotEmpty()
   token: string;
 }
+
+export class LogoutDto {
+  @IsJWT()
+  @IsNotEmpty()
+  token: string;
+}
