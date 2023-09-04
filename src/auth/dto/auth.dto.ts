@@ -143,3 +143,26 @@ export class ChangePasswordDto {
   @IsString()
   token: string;
 }
+
+export class ResetPasswordDto {
+  @IsNotEmpty()
+  @IsString()
+  strategy: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  @ValidateIf((o) => o.strategy === 'email')
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ValidateIf((o) => o.strategy === 'mobile')
+  @IsMobile()
+  mobile: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(4)
+  @IsPassword()
+  password: string;
+}

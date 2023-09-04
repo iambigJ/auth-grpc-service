@@ -1,9 +1,4 @@
-import {
-  Body,
-  Controller,
-  UseFilters,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, UseFilters, UseGuards } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import {
@@ -19,6 +14,7 @@ import {
   LoginDto,
   LogoutDto,
   RefreshTokenDto,
+  ResetPasswordDto,
   SendVerificationDto,
   SignupDto,
   VerifyTokenDto,
@@ -97,5 +93,12 @@ export class AuthController {
   ): Promise<Observable<any>> {
     const user = metadata.get('user')[0] as unknown as TokenClaim;
     return await this.authService.changePassword(changePasswordDto, user?.id);
+  }
+
+  @GrpcMethod('AuthService', 'ResetPassword')
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<Observable<any>> {
+    return await this.authService.resetPassword(resetPasswordDto);
   }
 }

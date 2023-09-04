@@ -19,6 +19,7 @@ import { AuthEmailStrategy } from './strategy/auth.email.strategy';
 import {
   ChangePasswordDto,
   LoginDto,
+  ResetPasswordDto,
   SignupDto,
   VerifyValidationCodeDto,
 } from './dto/auth.dto';
@@ -303,6 +304,44 @@ export class AuthService {
     }
     const newHashedPassword = await UtilsService.hashPassword(
       changePasswordDto.newPassword,
+    );
+    await this.userService.updateById(user.id, { password: newHashedPassword });
+    return of({ message: 'password is updated' });
+  }
+
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<Observable<any>> {
+    const { email, mobile } = resetPasswordDto;
+    const verifier = mobile || email;
+    const verification = await this.redisClient.get(verifier);
+    if (!verification) {
+      throw new RpcException({
+        code: 3,
+        message: 'mobile or email not verified!',
+      });
+    }
+    const toObjectCode = JSON.parse(verification) as FromRedis;
+    if (!toObjectCode.isValid) {
+      throw new RpcException({
+        code: 3,
+        message: 'mobile or email not verified!',
+      });
+    }
+    await this.redisClient.del(verifier);
+    const user = await this.userService.findByEmailOrMobile(email, mobile);
+    const isSame = await UtilsService.comparePass(
+      resetPasswordDto.password,
+      user.password,
+    );
+    if (isSame) {
+      throw new RpcException({
+        code: 3,
+        message: 'password is used before',
+      });
+    }
+    const newHashedPassword = await UtilsService.hashPassword(
+      resetPasswordDto.password,
     );
     await this.userService.updateById(user.id, { password: newHashedPassword });
     return of({ message: 'password is updated' });
