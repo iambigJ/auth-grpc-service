@@ -130,9 +130,10 @@ export class AuthService {
     const createUserData = { ...singUpDto, planId: plan.id };
     const createUserDto = AuthMapper.toPersistence(createUserData);
     const user = await this.userService.create(createUserDto);
-    const payload = { sub: user.id };
+    const { token, refreshToken } = await this.generateTokens(user);
     return of({
-      token: await this.jwtService.signAsync(payload),
+      token,
+      refreshToken,
     });
   }
 
