@@ -112,6 +112,13 @@ service AuthService {
   rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
+<<<<<<< Updated upstream
   rpc ChangePassword(ChangePassRequest) returns (ChangePassResponse);
   rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
+=======
+}
+
+service UserService {
+
+>>>>>>> Stashed changes
 }
