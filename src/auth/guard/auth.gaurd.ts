@@ -10,16 +10,17 @@ export class AuthGuard implements CanActivate {
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = context.switchToRpc().getContext();
-    const data = context.switchToRpc().getData();
-    if (!data.token) {
+    const { authorization } = ctx?.getMap();
+    if (!authorization) {
       return false;
     }
     try {
-      const decoded = await this.jwtService.verifyAsync(data.token, {
+      const decoded = await this.jwtService.verifyAsync(authorization, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
       ctx.set('user', decoded);
     } catch (e) {
+      console.log({ e });
       return false;
     }
     return true;

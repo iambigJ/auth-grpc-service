@@ -112,13 +112,23 @@ service AuthService {
   rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
-<<<<<<< Updated upstream
   rpc ChangePassword(ChangePassRequest) returns (ChangePassResponse);
   rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
-=======
+}
+
+message UserListRequest {
+  int32 Page = 1;
+  int32 count = 2;
+}
+
+message UserListResponse {
+  repeated User users = 1;
+}
+
+message User {
+  string id = 1;
 }
 
 service UserService {
-
->>>>>>> Stashed changes
+  rpc List(UserListRequest) returns (UserListResponse);
 }

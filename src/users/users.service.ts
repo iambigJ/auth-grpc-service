@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Users } from './users.entity';
 import { CreateUserDto } from './users.dto';
 import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
+import { PaginationDto } from '../common/dto/common.dto';
 
 @Injectable()
 export class UsersService {
@@ -29,6 +30,18 @@ export class UsersService {
     return this.userRepository.findOneByOrFail({
       id,
     });
+  }
+  async find(
+    paginationDto: PaginationDto,
+  ): Promise<{ rows: Users[]; count: number }> {
+    const [rows, count] = await this.userRepository.findAndCount({
+      skip: paginationDto.page,
+      take: paginationDto.count,
+    });
+    return {
+      rows,
+      count,
+    };
   }
 
   async updateById(id: string, updated: Partial<Users>): Promise<UpdateResult> {

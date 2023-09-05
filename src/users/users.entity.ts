@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   Generated,
+  AfterLoad,
 } from 'typeorm';
 import { Plan } from '../plans/plans.entity';
 import { JoinColumn } from 'typeorm';
@@ -62,12 +63,22 @@ export class Users {
     default: () => 'current_timestamp',
     name: 'createdAt',
   })
-  createdAt: Date;
+  createdAt: Date | string;
 
   @UpdateDateColumn({
     type: 'timestamptz',
     default: () => 'current_timestamp',
     name: 'updatedAt',
   })
-  updatedAt: Date;
+  updatedAt: Date | string;
+  @AfterLoad()
+  afterLoad() {
+    if (
+      typeof this.createdAt !== 'string' &&
+      typeof this.updatedAt !== 'string'
+    ) {
+      this.createdAt = this.createdAt.toISOString();
+      this.updatedAt = this.updatedAt?.toISOString();
+    }
+  }
 }
