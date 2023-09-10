@@ -60,3 +60,9 @@ export class CreateUserDto {
   @IsUUID()
   planId: string;
 }
+
+export class GetUserDto {
+  @IsNotEmpty()
+  @IsUUID()
+  userId: string;
+}

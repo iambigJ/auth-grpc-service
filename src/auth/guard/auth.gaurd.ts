@@ -20,7 +20,6 @@ export class AuthGuard implements CanActivate {
       });
       ctx.set('user', decoded);
     } catch (e) {
-      console.log({ e });
       return false;
     }
     return true;
