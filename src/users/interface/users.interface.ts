@@ -1,3 +1,5 @@
+import { UserProfile } from '../../auth/auth.interface';
+
 export interface UserInterface {
   id: string;
   emailVerified: boolean;
@@ -7,5 +9,5 @@ export interface UserInterface {
   mobile: string;
   email: string;
   role: string;
-  profile: any;
+  profile: UserProfile;
 }

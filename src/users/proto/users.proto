@@ -43,8 +43,37 @@ message GetUserRequest {
   string userId = 1;
 }
 
+message BulkUpdateUserRequest {
+  repeated string userIds = 1;
+  optional string role = 2;
+  optional string planId = 3;
+}
+
+message BulkUpdateUserResponse {
+  string message = 1;
+  int32 affected = 2;
+}
+
+message UpdateUserResponse {
+  string message = 1;
+  int32 affected = 2;
+}
+
+message UpdateUserRequest {
+  bool emailVerified = 1;
+  string mobile = 2;
+  string email = 3;
+  string role = 4;
+  UserProfile profile = 5;
+  string userId = 6;
+}
+
+
 service UserService {
   rpc List(UserListRequest) returns (UserListResponse);
   rpc Me(google.protobuf.Empty) returns (User);
   rpc Get(GetUserRequest) returns (User);
+  rpc BulkUpdate(BulkUpdateUserRequest) returns (BulkUpdateUserResponse);
+  rpc Update(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc UpdateProfile(UserProfile) returns (UpdateUserResponse);
 }

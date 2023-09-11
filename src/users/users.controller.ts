@@ -10,7 +10,12 @@ import { AuthGuard } from '../auth/guard/auth.gaurd';
 import { Users } from './users.entity';
 import { TokenClaim } from '../auth/auth.interface';
 import { Metadata } from '@grpc/grpc-js';
-import { GetUserDto } from './users.dto';
+import {
+  GetUserDto,
+  BulkUpdateUserDto,
+  UpdateUserDto,
+  UpdateProfileDto,
+} from './users.dto';
 
 @Controller('users')
 export class UsersController {
@@ -36,7 +41,43 @@ export class UsersController {
     {},
     metadata: Metadata,
   ): Promise<Observable<Pick<Users, 'password'>>> {
+    //TODO: return types
     const user = metadata.get('user')[0] as unknown as TokenClaim;
     return of(await this.usersService.findById(user.id));
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @GrpcMethod('UserService', 'BulkUpdate')
+  async bulkUpdate(
+    bulkUpdateUserDto: BulkUpdateUserDto,
+  ): Promise<Observable<{ affected: number }>> {
+    const { affected } = await this.usersService.updateByIds(bulkUpdateUserDto);
+    return of({ affected });
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @GrpcMethod('UserService', 'Update')
+  async update(
+    updateUserDto: UpdateUserDto,
+  ): Promise<Observable<{ affected: number }>> {
+    const { userId, ...update } = updateUserDto;
+    const { affected } = await this.usersService.updateById(userId, update);
+    return of({ affected });
+  }
+
+  @Roles(Role.Admin, Role.User)
+  @UseGuards(AuthGuard, RolesGuard)
+  @GrpcMethod('UserService', 'UpdateProfile')
+  async updateProfile(
+    updateProfileDto: UpdateProfileDto,
+    metadata: Metadata,
+  ): Promise<Observable<{ affected: number }>> {
+    const user = metadata.get('user')[0] as unknown as TokenClaim;
+    const { affected } = await this.usersService.updateById(user.id, {
+      profile: { ...updateProfileDto },
+    });
+    return of({ affected });
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Users } from './users.entity';
-import { CreateUserDto } from './users.dto';
+import { CreateUserDto, BulkUpdateUserDto } from './users.dto';
 import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
 import { PaginationDto } from '../common/dto/common.dto';
 
@@ -46,6 +46,11 @@ export class UsersService {
 
   async updateById(id: string, updated: Partial<Users>): Promise<UpdateResult> {
     return this.userRepository.update({ id }, { ...updated });
+  }
+
+  async updateByIds(updateUserDto: BulkUpdateUserDto): Promise<UpdateResult> {
+    const { userIds, ...update } = updateUserDto;
+    return this.userRepository.update({ id: In(userIds) }, { ...update });
   }
 
   async create(createUserDto: CreateUserDto): Promise<Users> {
