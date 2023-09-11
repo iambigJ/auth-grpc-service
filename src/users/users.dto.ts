@@ -99,3 +99,13 @@ export class UpdateUserDto extends PickType(CreateUserDto, [
 export class UpdateProfileDto extends PartialType<UserProfileDto>(
   UserProfileDto,
 ) {}
+
+export class DeleteUsersDto {
+  @IsUUID('all', { each: true })
+  userIds: string[];
+}
+
+export class ActiveUsersDto {
+  @IsUUID('all', { each: true })
+  userIds: string[];
+}

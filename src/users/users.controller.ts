@@ -15,6 +15,8 @@ import {
   BulkUpdateUserDto,
   UpdateUserDto,
   UpdateProfileDto,
+  DeleteUsersDto,
+  ActiveUsersDto,
 } from './users.dto';
 
 @Controller('users')
@@ -79,5 +81,19 @@ export class UsersController {
       profile: { ...updateProfileDto },
     });
     return of({ affected });
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @GrpcMethod('UserService', 'Delete')
+  async delete(deleteUsersDto: DeleteUsersDto): Promise<Observable<any>> {
+    return of(await this.usersService.delete(deleteUsersDto));
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @GrpcMethod('UserService', 'Active')
+  async active(activeUsersDto: ActiveUsersDto): Promise<Observable<any>> {
+    return of(await this.usersService.restore(activeUsersDto));
   }
 }

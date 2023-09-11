@@ -7,6 +7,7 @@ import {
   ManyToOne,
   Generated,
   AfterLoad,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Plan } from '../plans/plans.entity';
 import { JoinColumn } from 'typeorm';
@@ -71,6 +72,9 @@ export class Users {
     name: 'updatedAt',
   })
   updatedAt: Date | string;
+
+  @DeleteDateColumn()
+  public deletedAt: Date;
   @AfterLoad()
   afterLoad() {
     if (

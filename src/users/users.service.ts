@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Users } from './users.entity';
-import { CreateUserDto, BulkUpdateUserDto } from './users.dto';
+import {
+  CreateUserDto,
+  BulkUpdateUserDto,
+  DeleteUsersDto,
+  ActiveUsersDto,
+} from './users.dto';
 import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
 import { PaginationDto } from '../common/dto/common.dto';
 
@@ -56,5 +61,13 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<Users> {
     const createdUser = await this.userRepository.create(createUserDto);
     return this.userRepository.save(createdUser);
+  }
+
+  async delete(deleteUsersDto: DeleteUsersDto): Promise<any> {
+    return this.userRepository.softDelete({ id: In(deleteUsersDto.userIds) });
+  }
+
+  async restore(activeUserDto: ActiveUsersDto): Promise<any> {
+    return this.userRepository.restore({ id: In(activeUserDto.userIds) });
   }
 }

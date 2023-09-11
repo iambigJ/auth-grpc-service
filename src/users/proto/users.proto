@@ -68,6 +68,23 @@ message UpdateUserRequest {
   string userId = 6;
 }
 
+message DeleteUserRequest {
+  repeated string userIds = 1;
+}
+
+message DeleteUserResponse {
+  string message = 1;
+  int32 affected = 2;
+}
+
+message ActiveUserRequest {
+  repeated string userIds = 1;
+}
+
+message ActiveUserResponse {
+  string message = 1;
+  int32 affected = 2;
+}
 
 service UserService {
   rpc List(UserListRequest) returns (UserListResponse);
@@ -76,4 +93,6 @@ service UserService {
   rpc BulkUpdate(BulkUpdateUserRequest) returns (BulkUpdateUserResponse);
   rpc Update(UpdateUserRequest) returns (UpdateUserResponse);
   rpc UpdateProfile(UserProfile) returns (UpdateUserResponse);
+  rpc Delete(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc Active(ActiveUserRequest) returns (ActiveUserResponse);
 }
