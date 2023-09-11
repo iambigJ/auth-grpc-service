@@ -13,10 +13,11 @@ async function bootstrap() {
     {
       transport: Transport.GRPC,
       options: {
-        package: ['auth', 'users'],
+        package: ['auth', 'users', 'plans'],
         protoPath: [
           join(__dirname, 'auth/proto/auth.proto'),
           join(__dirname, 'users/proto/users.proto'),
+          join(__dirname, 'plans/proto/plans.proto'),
         ],
         url: `${process.env.GRPC_URL}`,
       },

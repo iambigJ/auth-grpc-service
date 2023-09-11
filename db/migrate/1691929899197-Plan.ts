@@ -9,7 +9,7 @@ export class Plan1691929899197 implements MigrationInterface {
         id          uuid not null primary key DEFAULT uuid_generate_v4(),
         name        varchar(255)  not null unique,
         data        jsonb     not null,
-        "createdAt" timestamp not null,
+        "createdAt" timestamp not null default CURRENT_TIMESTAMP ,
         "updatedAt" timestamp,
         "deletedAt" timestamp
     );`);

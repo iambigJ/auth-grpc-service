@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Plan } from './plans.entity';
-import { CreatePlansDto } from './plans.dto';
+import { CreatePlansDto, ReadPlanRequestDto, UpdatePlanRequestDto } from "./plans.dto";
+import { PaginationDto } from "../common/dto/common.dto";
 @Injectable()
 export class PlansService {
   constructor(
@@ -15,5 +16,21 @@ export class PlansService {
   }
   findByName(name: string): Promise<Plan> {
     return this.planRepository.findOneByOrFail({ name });
+  }
+
+  async read(readPlanRequest: ReadPlanRequestDto): Promise<any> {
+    // Implement your logic to read a plan here
+  }
+
+  async update(updatePlanRequest: UpdatePlanRequestDto): Promise<any> {
+    // Implement your logic to update a plan here
+  }
+
+  async delete(readPlanRequest: ReadPlanRequestDto): Promise<any> {
+    // Implement your logic to delete a plan here
+  }
+
+  async list(paginationDto: PaginationDto): Promise<any> {
+    // Implement your logic to list plans here
   }
 }

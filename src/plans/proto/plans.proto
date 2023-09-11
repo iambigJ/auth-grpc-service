@@ -1,0 +1,64 @@
+// users.proto
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package plans;
+
+message PlanData {
+    float unitCost = 1;
+    repeated string extension = 2;
+    double unitDivision = 3;
+    double audioSizeLimit = 4;
+    double balanceWarning = 5;
+    string apiKeyExpireTime = 6;
+    double audioDurationLimit = 7;
+    double defaultWalletBalance = 8;
+
+}
+
+message Plan {
+  string id = 1;
+  string name = 2;
+  PlanData data = 3;
+  string createdAt = 4;
+  string updatedAt = 5;
+}
+
+message CreatePlanRequest {
+  string name = 1;
+  PlanData data = 2;
+}
+
+message ReadPlanRequest {
+  string planId = 1;
+}
+
+message UpdatePlanResponse {
+  string message = 1;
+  int32 affected = 2;
+}
+
+message UpdatePlanRequest {
+  string id = 1;
+  optional string name = 2;
+  optional PlanData data = 3;
+}
+
+message ListPlan {
+  int32 Page = 1;
+  int32 count = 2;
+}
+
+message ListPlanResponse {
+  repeated Plan rows = 1;
+  int32 count = 2;
+}
+
+service PlanService {
+  rpc CreatePlan(CreatePlanRequest) returns (Plan);
+  rpc ReadPlan(ReadPlanRequest) returns (Plan);
+  rpc UpdatePlan(UpdatePlanRequest) returns (UpdatePlanResponse);
+  rpc DeletePlan(ReadPlanRequest) returns (UpdatePlanResponse);
+  rpc ListPlan(ListPlan) returns (ListPlanResponse);
+}

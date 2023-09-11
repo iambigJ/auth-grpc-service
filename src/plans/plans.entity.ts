@@ -4,8 +4,8 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
+  OneToMany, DeleteDateColumn, AfterLoad
+} from "typeorm";
 import { Users } from '../users/users.entity';
 
 export interface PlanData {
@@ -23,11 +23,32 @@ export class Plan {
   @Column('jsonb', { nullable: false, default: {} })
   data: PlanData;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  @CreateDateColumn({
+    type: 'timestamptz',
+    default: () => 'current_timestamp',
+    name: 'createdAt',
+  })
+  createdAt: Date | string;
 
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
+  @UpdateDateColumn({
+    type: 'timestamptz',
+    default: () => 'current_timestamp',
+    name: 'updatedAt',
+  })
+  updatedAt: Date | string;
+
+  @DeleteDateColumn()
+  public deletedAt: Date;
+  @AfterLoad()
+  afterLoad() {
+    if (
+      typeof this.createdAt !== 'string' &&
+      typeof this.updatedAt !== 'string'
+    ) {
+      this.createdAt = this.createdAt.toISOString();
+      this.updatedAt = this.updatedAt?.toISOString();
+    }
+  }
 
   @OneToMany(() => Users, (user) => user.plan)
   user: Users[];

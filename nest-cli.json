@@ -16,6 +16,11 @@
         "watchAssets": true
       },
       {
+        "include": "/plans/proto/*.proto",
+        "outDir": "dist/src",
+        "watchAssets": true
+      },
+      {
         "include": "/email/template/*.ejs",
         "outDir": "dist/src",
         "watchAssets": true
