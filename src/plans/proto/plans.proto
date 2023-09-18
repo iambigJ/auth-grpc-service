@@ -6,15 +6,14 @@ import "google/protobuf/empty.proto";
 package plans;
 
 message PlanData {
-    float unitCost = 1;
-    repeated string extension = 2;
-    double unitDivision = 3;
-    double audioSizeLimit = 4;
-    double balanceWarning = 5;
-    string apiKeyExpireTime = 6;
-    double audioDurationLimit = 7;
-    double defaultWalletBalance = 8;
-
+  float unitCost = 1;
+  repeated string extension = 2;
+  double unitDivision = 3;
+  double audioSizeLimit = 4;
+  double balanceWarning = 5;
+  string apiKeyExpireTime = 6;
+  double audioDurationLimit = 7;
+  double defaultWalletBalance = 8;
 }
 
 message Plan {
@@ -46,7 +45,7 @@ message UpdatePlanRequest {
 }
 
 message ListPlan {
-  int32 Page = 1;
+  int32 page = 1;
   int32 count = 2;
 }
 

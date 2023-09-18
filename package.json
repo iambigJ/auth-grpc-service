@@ -1,6 +1,6 @@
 {
   "name": "authentication-back",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "this is simple auth service using grpc...you can use it for microservice projects",
   "author": "",
   "private": true,

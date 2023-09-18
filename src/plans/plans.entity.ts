@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany, DeleteDateColumn, AfterLoad
-} from "typeorm";
+  OneToMany,
+  DeleteDateColumn,
+  AfterLoad,
+} from 'typeorm';
 import { Users } from '../users/users.entity';
 
 export interface PlanData {

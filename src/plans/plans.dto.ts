@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, ValidateNested, IsNumber, IsArray, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+  IsNumber,
+  IsArray,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { PlanData } from './plans.entity';
 
 export class CreatePlansDto {
@@ -43,6 +51,7 @@ export class PlanDataDto {
   @IsNumber()
   defaultWalletBalance?: number;
 }
+
 export class CreatePlanRequestDto {
   @IsString()
   name: string;
@@ -51,8 +60,9 @@ export class CreatePlanRequestDto {
   data: PlanDataDto;
 }
 
-export class ReadPlanRequestDto {
-  @IsString()
+export class GetPlanRequestDto {
+  @IsNotEmpty()
+  @IsUUID()
   planId: string;
 }
 
